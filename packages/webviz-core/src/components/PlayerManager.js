@@ -87,7 +87,7 @@ function buildPlayerFromDescriptor(childDescriptor: DataProviderDescriptor, init
   return new RandomAccessPlayer(rootDescriptor, {
     metricsCollector: undefined,
     seekToTime: getSeekToTime(),
-    notifyPlayerManager: async () => {},
+    notifyPlayerManager: async () => { },
     initialMessageOrder,
   });
 }
@@ -201,10 +201,10 @@ function PlayerManager({
   setUserNodeRosLib: setRosLib,
   setGlobalVariables: setVariables,
 }: Props) {
-  const usedFiles = React.useRef<File[]>([]);
-  const globalVariablesRef = React.useRef<GlobalVariables>(globalVariables);
-  const [player, setPlayerInternal] = React.useState<?OrderedStampPlayer>();
-  const [inputDescription, setInputDescription] = React.useState<React.Node>("No input selected.");
+  const usedFiles = React.useRef < File[] > ([]);
+  const globalVariablesRef = React.useRef < GlobalVariables > (globalVariables);
+  const [player, setPlayerInternal] = React.useState <? OrderedStampPlayer > ();
+  const [inputDescription, setInputDescription] = React.useState < React.Node > ("No input selected.");
 
   // We don't want to recreate the player when the message order changes, but we do want to
   // initialize it with the right order, so make a variable for its initial value we can use in the
@@ -255,6 +255,22 @@ function PlayerManager({
         });
     } else if (params.has(DEMO_QUERY_KEY)) {
       loadLayout({ ...demoLayoutJson, isFromUrl: false, skipSettingLocalStorage: true });
+    }
+
+    // directly load the URL-encoded layout from the URL param ?layout=
+    const layout = params.get("layout")
+    if (layout) {
+      try {
+        const json = JSON.parse(decodeURI(layout))
+        loadLayout({ ...json, skipSettingLocalStorage: false });
+      } catch (error) {
+        sendNotification(
+          "Layout failed to load",
+          `Parsing file failed. ${error}`,
+          "user",
+          "error"
+        );
+      }
     }
 
     const remoteDemoBagUrl = "https://open-source-webviz-ui.s3.amazonaws.com/demo.bag";
@@ -324,7 +340,7 @@ function PlayerManager({
   );
 }
 
-export default connect<Props, OwnProps, _, _, _, _>(
+export default connect < Props, OwnProps, _, _, _, _ > (
   (state) => ({
     messageOrder: state.persistedState.panels.playbackConfig.messageOrder,
     userNodes: state.persistedState.panels.userNodes,
